@@ -25,6 +25,10 @@ def __random_coord__():
 def haversine(conn, lat, lon, distance):
     print len(conn.locations_within_haversine(100, lat, lon))
 
+@timing
+def haversine_radians(conn, lat, lon, distance):
+    print len(conn.locations_within_haversine_radians(100, lat, lon))
+
 if __name__ == "__main__":
     #coords = populate()
     #connection = Psql()
@@ -35,3 +39,4 @@ if __name__ == "__main__":
     lon = -87.628533
 
     haversine(conn, lat, lon, 100)
+    haversine_radians(conn, math.radians(lat), math.radians(lon), 100)

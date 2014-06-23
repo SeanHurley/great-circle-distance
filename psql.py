@@ -32,6 +32,24 @@ class Psql:
         self.cur.execute(query)
         return self.cur.fetchall()
 
+    def locations_within_haversine_radians(self, distance, lat, lon):
+        query = """
+        SELECT *
+        FROM locations loc
+        WHERE
+            2 * %(r)s * abs(
+                asin(
+                    sqrt(
+                        pow((sin(%(lat)s - loc.rad_lat) / 2), 2) +
+                        cos(%(lat)s) * cos(loc.rad_lat) * pow((sin(%(lon)s - loc.rad_lon) / 2), 2)
+                    )
+                )
+            )
+            <= %(distance)s
+        """ % {"r": r, "distance": distance, "lat": lat, "lon": lon}
+        self.cur.execute(query)
+        return self.cur.fetchall()
+
     def __del__(self):
         if self.con:
             self.con.close()
