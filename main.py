@@ -3,6 +3,15 @@ import math
 import random
 import time
 
+def timing(f):
+    def wrap(*args):
+        time1 = time.time()
+        ret = f(*args)
+        time2 = time.time()
+        print '%s function took %0.3f ms' % (f.func_name, (time2-time1)*1000.0)
+        return ret
+    return wrap
+
 def populate():
     coords = []
     for x in range(0,1000000):
@@ -12,7 +21,17 @@ def populate():
 def __random_coord__():
     return (random.random() - .5) * 180
 
+@timing
+def haversine(conn, lat, lon, distance):
+    print len(conn.locations_within_haversine(100, lat, lon))
+
 if __name__ == "__main__":
-    coords = populate()
-    connection = Psql()
-    connection.insert_locations(coords)
+    #coords = populate()
+    #connection = Psql()
+    #connection.insert_locations(coords)
+
+    conn = Psql()
+    lat = 41.89195
+    lon = -87.628533
+
+    haversine(conn, lat, lon, 100)
