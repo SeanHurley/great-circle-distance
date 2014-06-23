@@ -9,8 +9,12 @@ class Psql:
         self.con = psycopg2.connect(database='geo', user='seanhurley', host="/tmp")
         self.cur = self.con.cursor()
 
+    def truncate_locations(self):
+        self.cur.execute("TRUNCATE TABLE locations")
+        self.con.commit()
+
     def insert_locations(self, coords):
-        args_str = ','.join(self.cur.mogrify("(DEFAULT,%s,%s)", x) for x in coords)
+        args_str = ','.join(self.cur.mogrify("(DEFAULT,%s,%s,%s,%s,%s,%s,%s)", x) for x in coords)
         self.cur.execute("INSERT INTO locations VALUES " + args_str)
         self.con.commit()
 
@@ -60,6 +64,15 @@ class Psql:
             )
             <= %(distance)s
         """ % {"r": r, "distance": distance, "x": x, "y": y, "z": z}
+        return self.__execute__(query)
+
+    def locations_within_earthdist(self, distance, lat, lon):
+        query = """
+        SELECT *
+        FROM locations loc
+        WHERE
+            earth_box( ll_to_earth( %(lat)s, %(lon)s ), %(distance)s ) @> ll_to_earth(loc.lat, loc.lon);
+        """ % {"distance": distance / 0.00062137, "lat": lat, "lon": lon}
         return self.__execute__(query)
 
     def __execute__(self, query):

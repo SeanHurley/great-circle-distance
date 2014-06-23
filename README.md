@@ -5,12 +5,17 @@ Testing different ways in relational databases to calculate the distance between
 
 Timings and Results
 ---
-1. Regular Haversine
-  * Total number of results: 269
-  * haversine function took 925.794 ms
-2. Precomputed radian Haversine
-  * Total number of results: 269
-  * haversine_radians function took 828.921 ms
-3. Straight Distance Formula
-  * Total number of results: 269
-  * straight_line function took 559.122 ms
+
+### Time to find records near arbitrary lat/lon
+|                     | Regular Haversine | Haversine precomputed radians | Straight Distance Formula | Postgres `earthdist`  |
+| -------------       |:-------------:    | :-----:                       | :------:                  |:------:               |
+| 10000 Records       | 13.2ms            | 8.66ms                        | 5.83ms                    | 2.00ms                |
+| 100000 Records      | 99.5ms            | 81.1ms                        | 55.7ms                    | 2.55ms                |
+| 1000000 Records     | 1190ms            | 821 ms                        | 575 ms                    | 8.10ms                |
+
+### Number of records returned for arbitrary lat/lon
+|                     | Regular Haversine | Haversine precomputed radians | Straight Distance Formula | Postgres `earthdist`  |
+| -------------       |:-------------:    | :-----:                       | :------:                  |:------:               |
+| 10000 Records       | 5                 | 5                             | 0                         | 8                     |
+| 100000 Records      | 32                | 32                            | 9                         | 51                    |
+| 1000000 Records     | 272               | 384                           | 135                       | 486                   |
