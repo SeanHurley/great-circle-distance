@@ -29,8 +29,7 @@ class Psql:
             )
             <= %(distance)s
         """ % {"r": r, "distance": distance, "lat": lat, "lon": lon}
-        self.cur.execute(query)
-        return self.cur.fetchall()
+        return self.__execute__(query)
 
     def locations_within_haversine_radians(self, distance, lat, lon):
         query = """
@@ -47,8 +46,26 @@ class Psql:
             )
             <= %(distance)s
         """ % {"r": r, "distance": distance, "lat": lat, "lon": lon}
+        return self.__execute__(query)
+
+    def locations_within_straight_line(self, distance, x, y, z):
+        query = """
+        SELECT *
+        FROM locations loc
+        WHERE
+            sqrt(
+                pow(%(x)s - x, 2) +
+                pow(%(y)s - y, 2) +
+                pow(%(z)s - z, 2)
+            )
+            <= %(distance)s
+        """ % {"r": r, "distance": distance, "x": x, "y": y, "z": z}
+        return self.__execute__(query)
+
+    def __execute__(self, query):
         self.cur.execute(query)
         return self.cur.fetchall()
+
 
     def __del__(self):
         if self.con:

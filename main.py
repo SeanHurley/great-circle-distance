@@ -23,11 +23,19 @@ def __random_coord__():
 
 @timing
 def haversine(conn, lat, lon, distance):
-    print len(conn.locations_within_haversine(100, lat, lon))
+    print "Total number of results: " + str(len(conn.locations_within_haversine(100, lat, lon)))
 
 @timing
 def haversine_radians(conn, lat, lon, distance):
-    print len(conn.locations_within_haversine_radians(100, lat, lon))
+    print "Total number of results: " + str(len(conn.locations_within_haversine_radians(100, lat, lon)))
+
+@timing
+def straight_line(conn, lat, lon, distance):
+    r = 3959
+    x = -r * math.cos(lat) * math.cos(lon)
+    y = r * math.sin(lat)
+    z = r * math.cos(lat) * math.sin(lon)
+    print "Total number of results: " + str(len(conn.locations_within_straight_line(100, x, y, z)))
 
 if __name__ == "__main__":
     #coords = populate()
@@ -39,4 +47,7 @@ if __name__ == "__main__":
     lon = -87.628533
 
     haversine(conn, lat, lon, 100)
+    # UPDATE locations SET rad_lat = radians(lat), rad_lon = radians(lon);
     haversine_radians(conn, math.radians(lat), math.radians(lon), 100)
+    # UPDATE locations SET x = -3959 * cos(rad_lat) * cos(rad_lon), y = 3959 * sin(rad_lat), z = 3959 * cos(rad_lat) * sin(rad_lon);
+    straight_line(conn, math.radians(lat), math.radians(lon), 100)
