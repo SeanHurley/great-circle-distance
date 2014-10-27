@@ -17,33 +17,11 @@ def populate(num_records):
     for x in range(0,num_records):
         lat = __random_coord__()
         lon = __random_coord__()
-        rad_lat = math.radians(lat)
-        rad_lon = math.radians(lon)
-        r = 3959
-        x = -r * math.cos(lat) * math.cos(lon)
-        y = r * math.sin(lat)
-        z = r * math.cos(lat) * math.sin(lon)
-        coords.append((lat, lon, rad_lat, rad_lon, x, y, z))
+        coords.append((lat, lon))
     return coords
 
 def __random_coord__():
     return (random.random() - .5) * 180
-
-@timing
-def haversine(conn, lat, lon, distance):
-    print "Total number of results: " + str(len(conn.locations_within_haversine(100, lat, lon)))
-
-@timing
-def haversine_radians(conn, lat, lon, distance):
-    print "Total number of results: " + str(len(conn.locations_within_haversine_radians(100, lat, lon)))
-
-@timing
-def straight_line(conn, lat, lon, distance):
-    r = 3959
-    x = -r * math.cos(lat) * math.cos(lon)
-    y = r * math.sin(lat)
-    z = r * math.cos(lat) * math.sin(lon)
-    print "Total number of results: " + str(len(conn.locations_within_straight_line(100, x, y, z)))
 
 @timing
 def earthdist(conn, lat, lon, distance):
@@ -67,10 +45,7 @@ if __name__ == "__main__":
         print
         print
         print "With " + str(total) + " records:"
-        haversine(conn, lat, lon, 100)
-        # UPDATE locations SET rad_lat = radians(lat), rad_lon = radians(lon);
-        haversine_radians(conn, math.radians(lat), math.radians(lon), 100)
-        # UPDATE locations SET x = -3959 * cos(rad_lat) * cos(rad_lon), y = 3959 * sin(rad_lat), z = 3959 * cos(rad_lat) * sin(rad_lon);
-        straight_line(conn, math.radians(lat), math.radians(lon), 100)
+
+        #https://gist.github.com/norman/1535879
         # CREATE INDEX test_index ON locations USING gist (ll_to_earth(lat, lon));
         earthdist(conn, lat, lon, 100)

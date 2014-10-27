@@ -6,7 +6,7 @@ import datetime
 r = 3959
 class Psql:
     def __init__(self):
-        self.con = psycopg2.connect(database='geo', user='seanhurley', host="/tmp")
+        self.con = psycopg2.connect(database='geo', user='hurley', host="/tmp")
         self.cur = self.con.cursor()
 
     def truncate_locations(self):
@@ -14,7 +14,7 @@ class Psql:
         self.con.commit()
 
     def insert_locations(self, coords):
-        args_str = ','.join(self.cur.mogrify("(DEFAULT,%s,%s,%s,%s,%s,%s,%s)", x) for x in coords)
+        args_str = ','.join(self.cur.mogrify("(DEFAULT,%s,%s)", x) for x in coords)
         self.cur.execute("INSERT INTO locations VALUES " + args_str)
         self.con.commit()
 
